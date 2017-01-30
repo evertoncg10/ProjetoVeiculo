@@ -9,10 +9,6 @@ import javax.ws.rs.ApplicationPath;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
-/**
- *
- * @author aluno
- */
 @ApplicationPath("rest")
 public class MyApplication extends ResourceConfig {
 

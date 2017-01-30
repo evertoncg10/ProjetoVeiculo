@@ -6,6 +6,12 @@ import java.sql.SQLException;
 
 public class Conexao {
 
+    private static final String DRIVER = "com.mysql.jdbc.Driver";
+    private static final String IP = "localhost";
+    private static final String BANCO_DADOS = "veiculodb";
+    private static final String USER = "root";
+    private static final String SENHA = "";
+
     static {
         try {
             // Carregando classe que será utilizada como conector
@@ -18,8 +24,9 @@ public class Conexao {
 
     public static Connection getConnection() {
         try {
-            // tentando realizar conexão
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/veiculodb?" + "user=root&password=");
+            // tentando realizar conexão localhost:3306
+            String strConexao = "jdbc:mysql://" + IP + "/" + BANCO_DADOS + "?" + "user=" + USER + "&" + "password=" + SENHA;
+            connection = DriverManager.getConnection(strConexao);
             System.out.println("Conexão OK.");
         } catch (SQLException e) {
             e.printStackTrace();

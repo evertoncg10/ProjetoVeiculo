@@ -32,8 +32,6 @@ var list = [
 	}
 ];
 
-
-
 function setList(list) {
 	var table = '<thead>' +
 		'<tr>' +
@@ -59,6 +57,14 @@ function setList(list) {
 	}
 	table += '</tbody>';
 	document.getElementById("listTable").innerHTML = table;
+
+	$(document).ready(function() {
+		$.getJSON('http://localhost:8080/projeto-veiculo/rest/veiculos/', function(data) {
+
+			alert(data.veiculos.id);
+
+		});
+	});
 }
 
 

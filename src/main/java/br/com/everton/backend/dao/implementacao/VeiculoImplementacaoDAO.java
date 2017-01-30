@@ -1,6 +1,5 @@
 package br.com.everton.backend.dao.implementacao;
 
-import java.math.RoundingMode;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,7 +34,7 @@ public class VeiculoImplementacaoDAO implements InterfaceDAO {
                     veiculo.setOpcionais(trataOpcionais(rs.getString("opcionais")));
                     veiculo.setPlaca(rs.getString("placa"));
                     veiculo.setRenavam(rs.getInt("renavam"));
-                    veiculo.setValorDeVenda(rs.getBigDecimal("valor_venda").setScale(2, RoundingMode.HALF_EVEN));
+                    veiculo.setValorDeVenda(Utils.formataCasasDecimais(2, rs.getBigDecimal("valor_venda")));
                     Object obj = (Object) veiculo;
                     listaVeiculos.add(obj);
                 }
@@ -62,7 +61,7 @@ public class VeiculoImplementacaoDAO implements InterfaceDAO {
                     veiculo.setOpcionais(trataOpcionais(rs.getString("opcionais")));
                     veiculo.setPlaca(rs.getString("placa"));
                     veiculo.setRenavam(rs.getInt("renavam"));
-                    veiculo.setValorDeVenda(rs.getBigDecimal("valor_venda").setScale(2, RoundingMode.HALF_EVEN));
+                    veiculo.setValorDeVenda(Utils.formataCasasDecimais(2, rs.getBigDecimal("valor_venda")));
                 }
             }
         } finally {
@@ -80,8 +79,9 @@ public class VeiculoImplementacaoDAO implements InterfaceDAO {
             pst.setString(2, veiculo.getPlaca()); // placa   
             pst.setInt(3, veiculo.getRenavam()); // renavam     
             pst.setString(4, veiculo.getModelo()); // modelo
-            pst.setString(5, trataOpcionais(veiculo.getOpcionais())); // opcionais   
-            pst.setBigDecimal(6, veiculo.getValorDeVenda().setScale(2, RoundingMode.HALF_EVEN)); // valor_venda
+            pst.setString(5, trataOpcionais(veiculo.getOpcionais())); // opcionais  
+
+            pst.setBigDecimal(6, Utils.formataCasasDecimais(2, veiculo.getValorDeVenda())); // valor_venda
 
             pst.execute();
         } finally {
@@ -98,7 +98,7 @@ public class VeiculoImplementacaoDAO implements InterfaceDAO {
             pst.setInt(2, veiculo.getRenavam()); // renavam     
             pst.setString(3, veiculo.getModelo()); // modelo  
             pst.setString(4, trataOpcionais(veiculo.getOpcionais())); // opcionais   
-            pst.setBigDecimal(5, veiculo.getValorDeVenda().setScale(2, RoundingMode.HALF_EVEN)); // valor_venda
+            pst.setBigDecimal(5, Utils.formataCasasDecimais(2, veiculo.getValorDeVenda())); // valor_venda
             pst.setLong(6, veiculo.getId()); //id
 
             pst.executeUpdate();
@@ -115,7 +115,6 @@ public class VeiculoImplementacaoDAO implements InterfaceDAO {
         } finally {
             Conexao.fecharConexao();
         }
-
     }
 
     private String trataOpcionais(String opcionais) {
@@ -127,15 +126,12 @@ public class VeiculoImplementacaoDAO implements InterfaceDAO {
                 case "ArCondicionado":
                     strBuffer.append("Ar Condicionado;");
                     break;
-
                 case "VidrosEletricos":
                     strBuffer.append("Vidros Elétricos;");
                     break;
-
                 case "AirBag":
                     strBuffer.append("Air Bag;");
                     break;
-
                 default:
                     break;
             }
@@ -150,15 +146,12 @@ public class VeiculoImplementacaoDAO implements InterfaceDAO {
         strBf.append("(data_cadastro,placa,renavam,modelo,opcionais,valor_venda) ");
         strBf.append("values ");
         strBf.append("(?,?,?,?,?,?)");
-
         return strBf.toString();
-
     }
 
     private String queryAtualizar() {
         //update tb_cliente set nome = ? where id = ?
         StringBuffer strBf = new StringBuffer();
-
         strBf.append("update tb_veiculo set ");
         strBf.append("placa=?,");
         strBf.append("renavam=?,");
@@ -166,9 +159,7 @@ public class VeiculoImplementacaoDAO implements InterfaceDAO {
         strBf.append("opcionais=?,");
         strBf.append("valor_venda=? ");
         strBf.append("where id =?");
-
         return strBf.toString();
-
     }
 
 }
