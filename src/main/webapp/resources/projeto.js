@@ -2,38 +2,7 @@
  * 
  */
 
-var list = [
-	{
-		"id" : 1,
-		"dataDeCadastro" : "11/01/2017 00:00:00",
-		"placa" : "OOO-6666",
-		"renavam" : 1234567890,
-		"modelo" : "Chevrolet Prisma LT 1.4",
-		"opcionais" : "Air Bag",
-		"valorDeVenda" : 15000.00
-	},
-	{
-		"id" : 5,
-		"dataDeCadastro" : "18/05/2017 00:00:00",
-		"placa" : "BBB-0000",
-		"renavam" : 1234567890,
-		"modelo" : "Wolksvagem Jetta Trendline 1.4 TSI",
-		"opcionais" : "Ar Condicionado",
-		"valorDeVenda" : 30000.00
-	},
-	{
-		"id" : 6,
-		"dataDeCadastro" : "14/07/2017 00:00:00",
-		"placa" : "MCO-1234",
-		"renavam" : 1234567890,
-		"modelo" : "Chevrolet Prisma LT 1.4",
-		"opcionais" : "Ar Condicionado;Vidros Elétricos;Air Bag;",
-		"valorDeVenda" : 12000.00
-	}
-];
-
-
-function setList(list) {
+function setList() {
 	var table = '<thead>' +
 		'<tr>' +
 		'<td><b>Data de cadastro</b></td>' +
@@ -43,27 +12,15 @@ function setList(list) {
 		'<td><b>Opcionais</b></td>' +
 		'<td><b>Valor de venda</b></td>' +
 		'</tr>' +
-		'</thead>' +
-		'<tbody>';
-	for (var key in list) {
-		table += '<tr>' +
-			'<td>' + list[key].dataDeCadastro + '</td>' +
-			'<td>' + list[key].placa + '</td>' +
-			'<td>' + list[key].renavam + '</td>' +
-			'<td>' + list[key].modelo + '</td>' +
-			'<td>' + list[key].opcionais + '</td>' +
-			'<td>' + float2moeda(list[key].valorDeVenda) + '</td>' +
-			'<td><button class="btn btn-warning" onclick="setUpdate(' + key + ');">Edit</button> <button class="btn btn-danger" onclick="deleteData(' + key + ');">Delete</button></td>' +
-			'</tr>';
-	}
-	table += '</tbody>';
+		'</thead>';
 	document.getElementById("listTable").innerHTML = table;
+	RecuperarUsuarios();
 }
 
 
-function salvar() {
+function salvarData() {
 	var placa = document.getElementById("placa").value;
-	var renavan = document.getElementById("renavam").value;
+	var renavam = document.getElementById("renavam").value;
 	var valorVenda = document.getElementById("valor").value;
 	var modelo = document.getElementById("modelo").value;
 
@@ -77,37 +34,110 @@ function salvar() {
 	}
 	var opcionais = strOpcionais;
 
-	$(function() {
-		$('form#formulario').submit(function() {
-			$.ajax({
-				type : 'POST',
-				url : '',
-				data : {
-					placa : document.getElementById("placa").value,
-				}
-			}).done(function(e) {});
+	var strJsonVeiculo = '{';
+	strJsonVeiculo += '\"id\":' + id + ',';
+	strJsonVeiculo += '\"placa\":' + '\"' + placa + '\"' + ',';
+	strJsonVeiculo += '\"renavam\":' + renavam + ',';
+	strJsonVeiculo += '\"modelo\":' + '\"' + modelo + '\"' + ',';
+	strJsonVeiculo += '\"opcionais\":' + '\"' + opcionais + '\"' + ',';
+	strJsonVeiculo += '\"valorDeVenda\":' + valorVenda + '}';
+	var obj = JSON.parse(strJsonVeiculo);
 
-		});
+	jQuery.ajax({
+		type : "POST",
+		url : "http://localhost:8080/projeto-veiculo/rest/veiculos/",
+		data : obj,
+		contentType : "application/json; charset=utf-8",
+		dataType : "json",
+		success : function(data) {
+			alert("Veiculo salvo com sucesso");
+			window.location.reload();
+		},
+
+		error : function(status) {
+			alert("Erro ao salvar veiculo");
+		}
 	});
-
-
-
 
 }
 
 
 function setUpdate(id) {
-	var obj = list[id];
-	document.getElementById("id").value = obj.id;
-	document.getElementById("placa").value = obj.placa;
-	document.getElementById("renavam").value = obj.renavam;
-	document.getElementById("valor").value = obj.valorDeVenda;
+	$.ajax({
+		type : "GET",
+		url : "http://localhost:8080/projeto-veiculo/rest/veiculos/" + id,
+		success : function(veiculos) {
+
+			document.getElementById("id").value = veiculos.id;
+			document.getElementById("placa").value = veiculos.placa;
+			document.getElementById("renavam").value = veiculos.renavam;
+			document.getElementById("valor").value = veiculos.valorDeVenda;
+
+
+
+		}
+	});
 
 	// Acessando propriedade CSS para fazer botão aparecer.
 	document.getElementById("btnUpdate").style.display = "inline-block";
 	// Acessando propriedade CSS para fazer botão desaparecer.
 	document.getElementById("btnSave").style.display = "none";
 
+}
+
+function atualizarData() {
+	var id = document.getElementById("id").value;
+	var placa = document.getElementById("placa").value;
+	var renavam = document.getElementById("renavam").value;
+	var valorVenda = document.getElementById("valor").value;
+	var modelo = document.getElementById("modelo").value;
+
+	strOpcionais = "";
+	var aChk = document.getElementsByName("opcionais");
+	for (i = 0; i < aChk.length; i++) {
+		checkBox = document.getElementById("opcionais" + (i + 1));
+		if (checkBox.checked == true) {
+			strOpcionais += " " + checkBox.value;
+		}
+	}
+	var opcionais = strOpcionais;
+
+	var strJsonVeiculo = '{';
+	strJsonVeiculo += '\"id\":' + id + ',';
+	strJsonVeiculo += '\"placa\":' + '\"' + placa + '\"' + ',';
+	strJsonVeiculo += '\"renavam\":' + renavam + ',';
+	strJsonVeiculo += '\"modelo\":' + '\"' + modelo + '\"' + ',';
+	strJsonVeiculo += '\"opcionais\":' + '\"' + opcionais + '\"' + ',';
+	strJsonVeiculo += '\"valorDeVenda\":' + valorVenda + '}';
+	var obj = JSON.parse(strJsonVeiculo);
+
+	jQuery.ajax({
+		type : "PUT",
+		url : "http://localhost:8080/projeto-veiculo/rest/veiculos/",
+		data : obj,
+		contentType : "application/json; charset=utf-8",
+		dataType : "json",
+		success : function(data) {
+			alert("Veiculo atualizado com sucesso");
+			window.location.reload();
+		},
+
+		error : function(status) {
+			alert("Erro ao atualizar veiculo");
+		}
+	});
+
+}
+
+function deleteData(id) {
+	jQuery.ajax({
+		url : 'http://localhost:8080/projeto-veiculo/rest/veiculos/' + id,
+		type : 'DELETE',
+		success : function(data) {
+			alert("Veiculo deletado com Sucesso");
+			window.location.reload();
+		}
+	});
 }
 
 function resetForm() {
@@ -172,4 +202,36 @@ function num(dom) {
 	dom.value = dom.value.replace(/\D/g, '');
 }
 
-setList(list);
+
+function RecuperarUsuarios() {
+	$.ajax({
+		type : "GET",
+		url : "http://localhost:8080/projeto-veiculo/rest/veiculos/",
+		success : function(veiculos) {
+			var table = '<tbody>';
+			$.each(veiculos, function(indice, veiculos) {
+				var id = veiculos.id;
+				var dataCadastro = veiculos.dataDeCadastro;
+				var placa = veiculos.placa;
+				var renavam = veiculos.renavam;
+				var modelo = veiculos.modelo;
+				var opcionais = veiculos.opcionais;
+				var valorVenda = veiculos.valorDeVenda;
+
+				table += '<tr>' +
+					'<td>' + dataCadastro + '</td>' +
+					'<td>' + placa + '</td>' +
+					'<td>' + renavam + '</td>' +
+					'<td>' + modelo + '</td>' +
+					'<td>' + opcionais + '</td>' +
+					'<td>' + float2moeda(valorVenda) + '</td>' +
+					'<td><button class="btn btn-warning" onclick="setUpdate(' + veiculos.id + ');">Edit</button> <button class="btn btn-danger" onclick="deleteData(' + veiculos.id + ');">Delete</button></td>' +
+					'</tr>';
+			})
+			table += '</tbody>';
+			document.getElementById("listTable").innerHTML = table;
+		}
+	});
+
+}
+setList();

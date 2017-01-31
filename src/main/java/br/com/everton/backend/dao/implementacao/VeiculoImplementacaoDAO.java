@@ -29,9 +29,8 @@ public class VeiculoImplementacaoDAO implements InterfaceDAO {
 
                     Timestamp timestamp = rs.getTimestamp("data_cadastro");
                     veiculo.setDataDeCadastro(Utils.formataData(timestamp.toLocalDateTime()));
-
                     veiculo.setModelo(rs.getString("modelo"));
-                    veiculo.setOpcionais(trataOpcionais(rs.getString("opcionais")));
+                    veiculo.setOpcionais(trataOpcionaisListar(rs.getString("opcionais")));
                     veiculo.setPlaca(rs.getString("placa"));
                     veiculo.setRenavam(rs.getInt("renavam"));
                     veiculo.setValorDeVenda(Utils.formataCasasDecimais(2, rs.getBigDecimal("valor_venda")));
@@ -58,7 +57,7 @@ public class VeiculoImplementacaoDAO implements InterfaceDAO {
                     Timestamp timestamp = rs.getTimestamp("data_cadastro");
                     veiculo.setDataDeCadastro(Utils.formataData(timestamp.toLocalDateTime()));
                     veiculo.setModelo(rs.getString("modelo"));
-                    veiculo.setOpcionais(trataOpcionais(rs.getString("opcionais")));
+                    veiculo.setOpcionais(trataOpcionaisListar(rs.getString("opcionais")));
                     veiculo.setPlaca(rs.getString("placa"));
                     veiculo.setRenavam(rs.getInt("renavam"));
                     veiculo.setValorDeVenda(Utils.formataCasasDecimais(2, rs.getBigDecimal("valor_venda")));
@@ -137,6 +136,17 @@ public class VeiculoImplementacaoDAO implements InterfaceDAO {
             }
         }
         return strBuffer.toString();
+    }
+
+    private String trataOpcionaisListar(String opcionais) {
+        opcionais = opcionais.replaceAll(";", " - ");
+        if (opcionais.length() > 0) {
+            opcionais = opcionais.substring(0, opcionais.length() - 1);
+        }
+        if (opcionais.length() > 0) {
+            opcionais = opcionais.substring(0, opcionais.length() - 1);
+        }
+        return opcionais;
     }
 
     private String queryInserir() {
